@@ -75,3 +75,12 @@ npm run seed
 ```
 
 This drops and recreates `accounts`, `transactions`, and `investments`, then reloads the seed rows from `db/seed.sql`.
+
+---
+
+## 3. Version Control
+
+- **Repository:** [github.com/lionel5116/financialIQ](https://github.com/lionel5116/financialIQ.git)
+- **Default branch:** `main`
+- `.env` files (root, `backend/`, `frontend/`) are gitignored and were never committed — the repo carries only `.env.example` templates. Clone + copy the examples + fill in local credentials to get running.
+- Root `.gitignore` covers root-level `node_modules/`, `.env`, `.DS_Store`, and logs; `backend/.gitignore` and `frontend/.gitignore` cover their own `node_modules/`, build output (`dist/`), and env files.

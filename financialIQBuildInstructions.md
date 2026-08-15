@@ -72,3 +72,10 @@ financialIQ/
   - `investments` — investment holdings tied to an IRA/401(k)/brokerage account
 - The same `seed.sql` file must also insert **test/seed records** for each table so the app has realistic data to develop and demo against immediately after setup (sample accounts across every account type, a handful of transactions, and a handful of investment holdings).
 - Provide an `npm run seed` script in `backend/package.json` that runs `seed.sql` against the configured database (drop/recreate tables, then insert the seed rows), so the database can be reset to a known state on demand.
+
+---
+
+## 3. Version Control
+
+- The project is checked into GitHub at: `https://github.com/lionel5116/financialIQ.git`, on the `main` branch.
+- `.env` files (root, `backend/`, `frontend/`) must never be committed — only `.env.example` templates belong in the repo. Each of the root, `backend/`, and `frontend/` directories must have a `.gitignore` excluding `node_modules/`, `.env`, and build output (e.g. `dist/`).
