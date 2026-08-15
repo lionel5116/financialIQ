@@ -9,7 +9,8 @@
     "start": "node src/app.js",
     "dev": "node --watch src/app.js",
     "seed": "node scripts/runSeed.js",
-    "clear": "node scripts/clearData.js"
+    "clear": "node scripts/clearData.js",
+    "snapshot": "node scripts/snapshotSeed.js"
   },
   "dependencies": {
     "cors": "^2.8.5",
