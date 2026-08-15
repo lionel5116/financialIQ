@@ -16,6 +16,15 @@ See [INSTRUCTIONS.md](./INSTRUCTIONS.md) for the original architecture blueprint
 
 ## Setup
 
+### 0. Root install (once per clone)
+
+```bash
+npm install          # root devDependencies + activates the git hook below
+npm run install:all  # backend + frontend dependencies
+```
+
+This also wires up a `post-merge` git hook (via `husky`) that re-runs `npm run install:all` automatically after every future `git pull` that brings in new commits — so dependency changes never require a manual reinstall. It only needs this one `npm install` to activate; after that it's automatic for the life of this clone.
+
 ### 1. Database
 
 This project expects a database named `financialIQ` (mixed-case) to already exist on your local Postgres server. If you're setting this up fresh:
@@ -93,6 +102,9 @@ From the project root (runs both apps together via `concurrently`):
 | `npm run clear` | Wipe all data back to empty (keeps schema, does **not** reseed) |
 | `npm run snapshot` | Dump the live database into `db/seed.sql`, replacing it — your backup |
 | `npm run build` | Production build of the frontend |
+| `npm run prepare` | Runs automatically on `npm install` (via `husky`) — wires up the git hooks below, no need to run by hand |
+
+**Git hooks** (`.husky/`): `post-merge` runs `npm run install:all` — since `git pull` performs a merge, this fires after every pull, keeping both apps' dependencies current automatically.
 
 Per-app:
 

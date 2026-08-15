@@ -125,7 +125,7 @@ A `recurring_expenses` table (`backend/db/migrations/003_add_recurring_expenses.
 
 ## 4. Root Tooling
 
-The root `package.json` doesn't run either app itself — it orchestrates both via `concurrently` and `kill-port` (devDependencies):
+The root `package.json` doesn't run either app itself — it orchestrates both via `concurrently`, `kill-port`, and `husky` (devDependencies):
 
 | Script | What it does |
 |---|---|
@@ -134,8 +134,12 @@ The root `package.json` doesn't run either app itself — it orchestrates both v
 | `npm run install:all` | Installs dependencies in both `backend/` and `frontend/` |
 | `npm run seed` | Proxies to `backend`'s seed script |
 | `npm run clear` | Proxies to `backend`'s clear script — wipes all data, keeps the schema |
+| `npm run snapshot` | Proxies to `backend`'s snapshot script — dumps the live DB into `db/seed.sql` |
 | `npm run build` | Proxies to `frontend`'s production build |
 | `npm run stop` | Frees ports 4000 (backend) and 5173 (frontend) via `kill-port`, then reaps the lingering `node --watch` and `concurrently` supervisor processes so nothing idles in the background |
+| `npm run prepare` | Runs automatically on `npm install` — sets `core.hooksPath` to `.husky/_` so the git hooks below take effect |
+
+**Git hooks** (`.husky/`, requires one `npm install` in a clone to activate — `core.hooksPath` is a local git config, not something a clone gets "for free"): `post-merge` runs `npm run install:all`. `git pull` performs a merge internally, so this fires after every pull that brings in new commits, keeping both apps' dependencies current without a manual step. Verified 2026-08-15 with a real clone/pull cycle (rolled back a commit, deleted `node_modules`, pulled forward, confirmed `install:all` ran and `node_modules` came back).
 
 ---
 

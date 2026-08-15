@@ -98,14 +98,17 @@ financialIQ/
 
 ## 4. Root Tooling
 
-- Add a `package.json` at the project root (separate from `backend/package.json` and `frontend/package.json`) whose only job is to orchestrate both apps, using `concurrently` and `kill-port` as devDependencies:
+- Add a `package.json` at the project root (separate from `backend/package.json` and `frontend/package.json`) whose only job is to orchestrate both apps, using `concurrently`, `kill-port`, and `husky` as devDependencies:
   - `npm run dev` — starts both dev servers together via `concurrently`, with labeled, color-coded output per app.
   - `npm run dev:backend` / `npm run dev:frontend` — proxy to each app's own dev script via `--prefix`.
   - `npm run install:all` — installs dependencies in both `backend/` and `frontend/`.
   - `npm run seed` — proxies to the backend's seed script.
   - `npm run clear` — proxies to the backend's clear script (wipes all data, keeps schema).
+  - `npm run snapshot` — proxies to the backend's snapshot script (backs up the live DB into `db/seed.sql`).
   - `npm run build` — proxies to the frontend's production build.
   - `npm run stop` — frees the backend (4000) and frontend (5173) ports via `kill-port`, and also reaps the `node --watch` / `concurrently` supervisor processes so nothing lingers in the background after stopping.
+  - `npm run prepare` — the standard npm lifecycle hook name; let `husky` own it so it runs automatically on `npm install` and wires up git hooks.
+- Keep dependencies in both `backend/` and `frontend/` current automatically: add a `post-merge` git hook (via `husky`, since `git pull` performs a merge internally) that runs `npm run install:all`. Document clearly that this requires one `npm install` in any given clone before it activates — `core.hooksPath` is local git config, not something version control transmits on its own.
 
 ---
 
