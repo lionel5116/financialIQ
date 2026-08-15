@@ -1,6 +1,7 @@
 import { CreditCard, Landmark, PiggyBank, TrendingUp } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import AccountsOverviewList from '../components/AccountsOverviewList';
+import AccountTypeChart from '../components/AccountTypeChart';
 import AllocationChart from '../components/AllocationChart';
 import IncomeExpenseChart from '../components/IncomeExpenseChart';
 import InvestmentsOverviewTable from '../components/InvestmentsOverviewTable';
@@ -55,12 +56,21 @@ export default function Dashboard() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
-        <div className={`${PANEL_CLASS} lg:col-span-2`}>
+        <div className={`${PANEL_CLASS} lg:col-span-3`}>
           <h2 className="text-sm font-semibold text-white mb-4">Asset Allocation Breakdown</h2>
-          <AllocationChart allocation={summary.allocationByAssetClass} />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <p className="text-xs font-medium text-slate-400 mb-1">By Asset Class</p>
+              <AllocationChart allocation={summary.allocationByAssetClass} />
+            </div>
+            <div>
+              <p className="text-xs font-medium text-slate-400 mb-1">By Account Type</p>
+              <AccountTypeChart accountsByType={summary.accountsByType} />
+            </div>
+          </div>
         </div>
 
-        <div className={`${PANEL_CLASS} lg:col-span-3`}>
+        <div className={`${PANEL_CLASS} lg:col-span-2`}>
           <h2 className="text-sm font-semibold text-white mb-1">Accounts Overview</h2>
           <AccountsOverviewList accounts={accounts} />
         </div>

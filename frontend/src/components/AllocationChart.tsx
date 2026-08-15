@@ -1,5 +1,5 @@
-import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts';
-import { ASSET_CLASS_LABELS, formatCurrency } from '../utils/format';
+import { ASSET_CLASS_LABELS } from '../utils/format';
+import DonutChart from './DonutChart';
 
 // Categorical palette slots (fixed order, dark-surface steps) — see dataviz skill reference palette.
 const SERIES_COLORS: Record<string, string> = {
@@ -23,41 +23,11 @@ export default function AllocationChart({ allocation }: AllocationChartProps) {
       value,
     }));
 
-  if (data.length === 0) {
-    return <p className="text-sm text-slate-500">No investment holdings yet.</p>;
-  }
-
   return (
-    <ResponsiveContainer width="100%" height={260}>
-      <PieChart>
-        <Pie
-          data={data}
-          dataKey="value"
-          nameKey="name"
-          innerRadius={64}
-          outerRadius={92}
-          paddingAngle={2}
-          stroke="#1e293b"
-          strokeWidth={2}
-        >
-          {data.map((entry) => (
-            <Cell key={entry.key} fill={SERIES_COLORS[entry.key] || '#64748b'} />
-          ))}
-        </Pie>
-        <Tooltip
-          formatter={(value: unknown) => formatCurrency(Number(Array.isArray(value) ? value[0] : (value ?? 0)))}
-          contentStyle={{
-            fontSize: 13,
-            borderRadius: 8,
-            background: '#0f172a',
-            borderColor: '#334155',
-            color: '#e2e8f0',
-          }}
-          itemStyle={{ color: '#e2e8f0' }}
-          labelStyle={{ color: '#e2e8f0' }}
-        />
-        <Legend verticalAlign="bottom" height={36} wrapperStyle={{ fontSize: 13, color: '#94a3b8' }} />
-      </PieChart>
-    </ResponsiveContainer>
+    <DonutChart
+      data={data}
+      colorFor={(key) => SERIES_COLORS[key] || '#64748b'}
+      emptyMessage="No investment holdings yet."
+    />
   );
 }
