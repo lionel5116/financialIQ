@@ -11,6 +11,7 @@ const SERIES_COLORS: Record<string, string> = {
   ira: '#d55181', // slot 5 magenta
   '401k': '#008300', // slot 6 green
   brokerage: '#9085e9', // slot 7 violet
+  home_equity: '#e66767', // slot 8 red
 };
 
 interface AccountTypeChartProps {

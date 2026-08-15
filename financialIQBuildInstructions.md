@@ -70,7 +70,7 @@ financialIQ/
 
 ### Schema & Seed Data
 - Define the schema (tables, constraints, indexes) as DDL in `backend/db/seed.sql`, covering at minimum:
-  - `accounts` — bank accounts, CDs, IRAs, 401(k), and brokerage accounts. `accounts.type` must allow: `checking`, `savings`, `cash`, `cd`, `ira`, `401k`, `brokerage`.
+  - `accounts` — bank accounts, CDs, IRAs, 401(k), brokerage accounts, and home equity. `accounts.type` must allow: `checking`, `savings`, `cash`, `cd`, `ira`, `401k`, `brokerage`, `home_equity`. Illiquid types like `home_equity` must count toward net worth / total assets (every account balance does) but must be excluded from any "total cash" aggregation.
   - `transactions` — daily income/expenses tied to an account
   - `investments` — investment holdings tied to an account (any account type)
 - The same `seed.sql` file must also insert **test/seed records** for each table so the app has realistic data to develop and demo against immediately after setup (sample accounts across every account type, a handful of transactions, and a handful of investment holdings).

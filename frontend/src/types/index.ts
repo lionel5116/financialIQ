@@ -1,4 +1,4 @@
-export type AccountType = 'checking' | 'savings' | 'cash' | 'cd' | 'ira' | '401k' | 'brokerage';
+export type AccountType = 'checking' | 'savings' | 'cash' | 'cd' | 'ira' | '401k' | 'brokerage' | 'home_equity';
 
 export interface Account {
   id: number;

@@ -22,6 +22,7 @@ export const ACCOUNT_TYPE_LABELS: Record<string, string> = {
   ira: 'IRA',
   '401k': '401(k)',
   brokerage: 'Brokerage',
+  home_equity: 'Home Equity',
 };
 
 export const ASSET_CLASS_LABELS: Record<string, string> = {
