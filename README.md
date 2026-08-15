@@ -73,6 +73,17 @@ npm run dev              # starts on http://localhost:5173
 
 Open http://localhost:5173.
 
+### 4. Accessing from another device on your network (iPad, phone, etc.)
+
+The Vite dev server binds to all network interfaces (`server.host: true` in `frontend/vite.config.ts`), and `frontend/src/services/api.ts` derives the API URL from whatever host the page was loaded from — so no per-device frontend config is needed. Two things to know:
+
+- Find your Mac's LAN IP (System Settings → Wi-Fi → Details → TCP/IP, or `ipconfig getifaddr en0`) and visit `http://<that-ip>:5173` from the other device, on the same network.
+- The backend only accepts requests from origins listed in `CLIENT_ORIGIN` (`backend/.env`) — it must include that same LAN URL, e.g.:
+  ```ini
+  CLIENT_ORIGIN=http://localhost:5173,http://192.168.1.10:5173
+  ```
+  If your Mac's LAN IP changes (DHCP), update this and restart the backend.
+
 ## API
 
 | Method | Route | Description |

@@ -12,7 +12,11 @@ const { notFound, errorHandler } = require('./middleware/errorHandler');
 
 const app = express();
 
-app.use(cors({ origin: process.env.CLIENT_ORIGIN || 'http://localhost:5173' }));
+// CLIENT_ORIGIN may be a single origin or a comma-separated list, e.g. to
+// allow both http://localhost:5173 and a LAN IP like http://192.168.1.10:5173
+// for testing from another device (iPad, phone) on the same network.
+const allowedOrigins = (process.env.CLIENT_ORIGIN || 'http://localhost:5173').split(',').map((o) => o.trim());
+app.use(cors({ origin: allowedOrigins }));
 app.use(express.json());
 
 app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
