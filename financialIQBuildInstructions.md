@@ -82,6 +82,10 @@ financialIQ/
 ### Schema Migrations
 - `backend/db/seed.sql` drops and recreates tables — safe for a fresh database, but **never** run it against a database that already holds real user data, since it discards everything. When the schema changes after real data exists (e.g. adding a new `accounts.type` value), write a one-off, additive SQL file under `backend/db/migrations/` (e.g. `ALTER TABLE ... DROP/ADD CONSTRAINT`) and apply it directly against the existing database instead of reseeding. `seed.sql` should still be updated in the same change so fresh installs get the new schema for free.
 
+### Backup via Snapshot
+- Provide an `npm run snapshot` script (`backend/scripts/snapshotSeed.js`) that dumps the live `accounts`/`transactions`/`investments` tables into `db/seed.sql`, using explicit `id` columns and `setval(...)` calls so ids and foreign-key relationships are restored exactly by a later `npm run seed`. This turns `seed.sql` into the project's own backup/restore file rather than a generic demo dataset.
+- Real financial data (balances, institution names, addresses, etc.) is meaningfully more sensitive than application code. If the repository is public, **do not run `npm run snapshot` and commit/push the result without explicit, informed confirmation from the user first** — flag that the repo is public and what the snapshot contains, and let them decide, even under a standing "always push" instruction. That instruction covers routine code changes, not an affirmative decision to publish real PII.
+
 ---
 
 ## 3. Version Control

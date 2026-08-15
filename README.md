@@ -47,9 +47,11 @@ PGPASSWORD=<your local postgres password>
 
 ```bash
 npm install
-npm run seed   # drops/recreates accounts, transactions, investments and loads seed data
+npm run seed   # drops/recreates accounts, transactions, investments and loads db/seed.sql
 npm run dev    # starts the API on http://localhost:4000
 ```
+
+> `db/seed.sql` currently holds a real snapshot of this project's own account data (see `npm run snapshot` below), not generic demo data — and this repo is public. Be mindful of that before adding more real financial detail to it.
 
 ### 3. Frontend
 
@@ -83,8 +85,9 @@ From the project root (runs both apps together via `concurrently`):
 | `npm run dev` | Start backend + frontend together, labeled/color-coded output |
 | `npm run stop` | Free ports 4000 + 5173 and stop both dev servers |
 | `npm run install:all` | `npm install` in both `backend/` and `frontend/` |
-| `npm run seed` | (Re)apply schema + seed demo data |
+| `npm run seed` | (Re)apply schema + load `db/seed.sql` |
 | `npm run clear` | Wipe all data back to empty (keeps schema, does **not** reseed) |
+| `npm run snapshot` | Dump the live database into `db/seed.sql`, replacing it — your backup |
 | `npm run build` | Production build of the frontend |
 
 Per-app:
@@ -92,7 +95,8 @@ Per-app:
 | Location | Command | Description |
 |---|---|---|
 | `backend/` | `npm run dev` | Start the API with auto-reload |
-| `backend/` | `npm run seed` | Drop/recreate tables and load seed data |
+| `backend/` | `npm run seed` | Drop/recreate tables and load `db/seed.sql` |
 | `backend/` | `npm run clear` | Truncate all tables (reset to empty, id sequences reset to 1) |
+| `backend/` | `npm run snapshot` | Dump accounts/transactions/investments into `db/seed.sql` (ids and relationships preserved) |
 | `frontend/` | `npm run dev` | Start the Vite dev server |
 | `frontend/` | `npm run build` | Type-check and build for production |
