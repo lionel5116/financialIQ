@@ -16,8 +16,7 @@ interface InvestmentFormModalProps {
 }
 
 export default function InvestmentFormModal({ accounts, initial, onClose, onSubmit }: InvestmentFormModalProps) {
-  const investableAccounts = accounts.filter((a) => a.type === 'ira' || a.type === '401k' || a.type === 'brokerage');
-  const [accountId, setAccountId] = useState(String(initial?.account_id ?? investableAccounts[0]?.id ?? ''));
+  const [accountId, setAccountId] = useState(String(initial?.account_id ?? accounts[0]?.id ?? ''));
   const [symbol, setSymbol] = useState(initial?.symbol ?? '');
   const [name, setName] = useState(initial?.name ?? '');
   const [assetClass, setAssetClass] = useState<AssetClass>(initial?.asset_class ?? 'stock');
@@ -59,7 +58,7 @@ export default function InvestmentFormModal({ accounts, initial, onClose, onSubm
             onChange={(e) => setAccountId(e.target.value)}
             className={FIELD_CLASS}
           >
-            {investableAccounts.map((a) => (
+            {accounts.map((a) => (
               <option key={a.id} value={a.id}>
                 {a.name}
               </option>
@@ -157,7 +156,7 @@ export default function InvestmentFormModal({ accounts, initial, onClose, onSubm
           </button>
           <button
             type="submit"
-            disabled={submitting || investableAccounts.length === 0}
+            disabled={submitting || accounts.length === 0}
             className="px-4 py-2 text-sm font-medium rounded-md bg-emerald-600 text-white hover:bg-emerald-500 disabled:opacity-50"
           >
             {initial ? 'Save' : 'Add Investment'}

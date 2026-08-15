@@ -29,8 +29,6 @@ export default function Investments() {
 
   useEffect(load, []);
 
-  const investableAccounts = accounts.filter((a) => a.type === 'ira' || a.type === '401k' || a.type === 'brokerage');
-
   async function handleSubmit(input: Partial<InvestmentInput>) {
     if (editing) {
       await investmentsApi.updateInvestment(editing.id, input);
@@ -90,7 +88,7 @@ export default function Investments() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-xl font-semibold text-white">Investments</h1>
-          <p className="text-sm text-slate-500 mt-0.5">Holdings across your IRA, 401(k) and brokerage accounts.</p>
+          <p className="text-sm text-slate-500 mt-0.5">Holdings across your accounts.</p>
         </div>
         <div className="flex gap-2">
           <button
@@ -112,7 +110,7 @@ export default function Investments() {
               setEditing(undefined);
               setModalOpen(true);
             }}
-            disabled={investableAccounts.length === 0}
+            disabled={accounts.length === 0}
             className="px-3 py-2 text-sm font-medium rounded-md bg-emerald-600 text-white hover:bg-emerald-500 disabled:opacity-50"
           >
             Add Investment
