@@ -1,5 +1,5 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import Navbar from './components/Navbar';
+import Sidebar from './components/Sidebar';
 import Accounts from './pages/Accounts';
 import Dashboard from './pages/Dashboard';
 import Investments from './pages/Investments';
@@ -8,9 +8,9 @@ import Transactions from './pages/Transactions';
 function App() {
   return (
     <BrowserRouter>
-      <div className="min-h-screen bg-gray-50">
-        <Navbar />
-        <main className="max-w-6xl mx-auto px-4 py-6">
+      <div className="min-h-screen flex bg-slate-900">
+        <Sidebar />
+        <main className="flex-1 min-w-0 px-8 py-6">
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/accounts" element={<Accounts />} />

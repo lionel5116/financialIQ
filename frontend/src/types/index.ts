@@ -46,10 +46,19 @@ export interface Investment {
 
 export type InvestmentInput = Omit<Investment, 'id' | 'created_at' | 'updated_at' | 'account_name' | 'current_value'>;
 
+export interface IncomeExpensePoint {
+  date: string;
+  income: number;
+  expenses: number;
+}
+
 export interface DashboardSummary {
   netWorth: number;
+  totalAssets: number;
+  totalCash: number;
   accountsByType: Record<string, number>;
   investmentsTotal: number;
   allocationByAssetClass: Record<string, number>;
   monthToDateSpend: number;
+  incomeExpenseTrend: IncomeExpensePoint[];
 }

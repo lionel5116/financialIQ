@@ -1,13 +1,13 @@
 import { Cell, Legend, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts';
 import { ASSET_CLASS_LABELS, formatCurrency } from '../utils/format';
 
-// Categorical palette slots (fixed order) — see dataviz skill reference palette.
+// Categorical palette slots (fixed order, dark-surface steps) — see dataviz skill reference palette.
 const SERIES_COLORS: Record<string, string> = {
-  stock: '#2a78d6', // slot 1 blue
-  bond: '#eb6834', // slot 2 orange
-  etf: '#1baf7a', // slot 3 aqua
-  mutual_fund: '#eda100', // slot 4 yellow
-  cash: '#e87ba4', // slot 5 magenta
+  stock: '#3987e5', // slot 1 blue
+  bond: '#d95926', // slot 2 orange
+  etf: '#199e70', // slot 3 aqua
+  mutual_fund: '#c98500', // slot 4 yellow
+  cash: '#d55181', // slot 5 magenta
 };
 
 interface AllocationChartProps {
@@ -24,31 +24,39 @@ export default function AllocationChart({ allocation }: AllocationChartProps) {
     }));
 
   if (data.length === 0) {
-    return <p className="text-sm text-gray-500">No investment holdings yet.</p>;
+    return <p className="text-sm text-slate-500">No investment holdings yet.</p>;
   }
 
   return (
-    <ResponsiveContainer width="100%" height={280}>
+    <ResponsiveContainer width="100%" height={260}>
       <PieChart>
         <Pie
           data={data}
           dataKey="value"
           nameKey="name"
-          innerRadius={70}
-          outerRadius={100}
+          innerRadius={64}
+          outerRadius={92}
           paddingAngle={2}
-          stroke="#fcfcfb"
+          stroke="#1e293b"
           strokeWidth={2}
         >
           {data.map((entry) => (
-            <Cell key={entry.key} fill={SERIES_COLORS[entry.key] || '#898781'} />
+            <Cell key={entry.key} fill={SERIES_COLORS[entry.key] || '#64748b'} />
           ))}
         </Pie>
         <Tooltip
           formatter={(value: unknown) => formatCurrency(Number(Array.isArray(value) ? value[0] : (value ?? 0)))}
-          contentStyle={{ fontSize: 13, borderRadius: 8, borderColor: '#e1e0d9' }}
+          contentStyle={{
+            fontSize: 13,
+            borderRadius: 8,
+            background: '#0f172a',
+            borderColor: '#334155',
+            color: '#e2e8f0',
+          }}
+          itemStyle={{ color: '#e2e8f0' }}
+          labelStyle={{ color: '#e2e8f0' }}
         />
-        <Legend verticalAlign="bottom" height={36} wrapperStyle={{ fontSize: 13, color: '#52514e' }} />
+        <Legend verticalAlign="bottom" height={36} wrapperStyle={{ fontSize: 13, color: '#94a3b8' }} />
       </PieChart>
     </ResponsiveContainer>
   );

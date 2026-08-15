@@ -27,6 +27,7 @@ Both `frontend` and `backend` must live in the same root directory (Monorepo set
 ```text
 financialIQ/
 ├── INSTRUCTIONS.md
+├── package.json              # root: concurrently-based scripts to run both apps together
 ├── backend/
 │   ├── src/
 │   │   ├── config/          # DB connections & environment config
@@ -40,13 +41,15 @@ financialIQ/
 │   └── package.json
 ├── frontend/
 │   ├── src/
-│   │   ├── components/      # UI components (Tables, Charts, Modals, Navbar)
+│   │   ├── components/      # UI components (Tables, Charts, Modals, Sidebar, Logo)
 │   │   ├── pages/           # Dashboard, Accounts, Investments, Transactions
 │   │   ├── services/        # API service layers
 │   │   ├── types/           # TypeScript interfaces and types
 │   │   ├── utils/           # CSV and PDF export helpers
 │   │   ├── App.tsx
 │   │   └── main.tsx
+│   ├── public/
+│   │   └── favicon.svg      # financialIQ mark, matches Logo.tsx
 │   ├── package.json
 │   ├── tailwind.config.js
 │   └── tsconfig.json
@@ -73,9 +76,35 @@ financialIQ/
 - The same `seed.sql` file must also insert **test/seed records** for each table so the app has realistic data to develop and demo against immediately after setup (sample accounts across every account type, a handful of transactions, and a handful of investment holdings).
 - Provide an `npm run seed` script in `backend/package.json` that runs `seed.sql` against the configured database (drop/recreate tables, then insert the seed rows), so the database can be reset to a known state on demand.
 
+### Clearing Data
+- Provide a separate `backend/db/clear.sql` (a `TRUNCATE ... RESTART IDENTITY CASCADE` over every table) and an `npm run clear` script in `backend/package.json` that empties all tables **without** reinserting seed data and without dropping the schema. This is distinct from `npm run seed`: `seed` resets to demo data, `clear` resets to genuinely empty. Since it's destructive, it must never run automatically (e.g. on server start) — only on explicit invocation.
+
 ---
 
 ## 3. Version Control
 
 - The project is checked into GitHub at: `https://github.com/lionel5116/financialIQ.git`, on the `main` branch.
 - `.env` files (root, `backend/`, `frontend/`) must never be committed — only `.env.example` templates belong in the repo. Each of the root, `backend/`, and `frontend/` directories must have a `.gitignore` excluding `node_modules/`, `.env`, and build output (e.g. `dist/`).
+
+---
+
+## 4. Root Tooling
+
+- Add a `package.json` at the project root (separate from `backend/package.json` and `frontend/package.json`) whose only job is to orchestrate both apps, using `concurrently` and `kill-port` as devDependencies:
+  - `npm run dev` — starts both dev servers together via `concurrently`, with labeled, color-coded output per app.
+  - `npm run dev:backend` / `npm run dev:frontend` — proxy to each app's own dev script via `--prefix`.
+  - `npm run install:all` — installs dependencies in both `backend/` and `frontend/`.
+  - `npm run seed` — proxies to the backend's seed script.
+  - `npm run clear` — proxies to the backend's clear script (wipes all data, keeps schema).
+  - `npm run build` — proxies to the frontend's production build.
+  - `npm run stop` — frees the backend (4000) and frontend (5173) ports via `kill-port`, and also reaps the `node --watch` / `concurrently` supervisor processes so nothing lingers in the background after stopping.
+
+---
+
+## 5. Design System & Branding
+
+- **Theme:** The application uses a single, fixed dark theme — no light/dark toggle. Page background and panel surfaces must be dark (e.g. slate-900 page, slate-800 panels); primary text near-white, secondary text muted gray; one accent color (e.g. emerald) for active nav state, primary actions, and positive values; a distinct color for negative values.
+- **Logo:** The app must use the provided `financialIQ` mark (gradient bar-chart icon in a rounded dark square + wordmark, with "IQ" in the accent color) as a reusable component, rendered in the sidebar, and as the browser favicon (icon only). Since the app has no light theme, the logo component must not rely on `dark:` Tailwind variants — render dark-mode styling unconditionally.
+- **Navigation:** Use a fixed-width left sidebar (not a top navbar): dark surface, logo at the top, nav items with icons + labels, and a visually distinct active-route state.
+- **Dashboard layout:** greeting header → a row of stat cards summarizing net worth, total assets, total cash, and current-month expenses → an asset allocation breakdown chart paired with an accounts overview list → an investment portfolio summary paired with an income/expense trend chart. The dashboard summary API must supply whatever aggregate fields these widgets need (e.g. total assets, total cash, a time-series of income vs. expenses) in addition to the core net worth / allocation / spend figures.
+- **Chart colors:** Never eyeball chart colors. Assign categorical series colors in a fixed hue order and validate them (contrast, colorblind-safe separation, lightness) against the actual surface color each chart renders on before shipping.

@@ -8,14 +8,14 @@ interface ModalProps {
 
 export default function Modal({ title, onClose, children }: ModalProps) {
   return (
-    <div className="fixed inset-0 z-20 flex items-center justify-center bg-black/40 px-4">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-md">
-        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200">
-          <h3 className="font-semibold text-gray-900">{title}</h3>
+    <div className="fixed inset-0 z-20 flex items-center justify-center bg-black/60 px-4">
+      <div className="bg-slate-800 border border-white/10 rounded-lg shadow-xl w-full max-w-md">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-white/5">
+          <h3 className="font-semibold text-white">{title}</h3>
           <button
             type="button"
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 text-xl leading-none"
+            className="text-slate-500 hover:text-slate-300 text-xl leading-none"
             aria-label="Close"
           >
             &times;

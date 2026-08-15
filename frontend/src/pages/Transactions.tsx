@@ -71,21 +71,21 @@ export default function Transactions() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-semibold text-gray-900">Transactions</h1>
-          <p className="text-sm text-gray-500 mt-0.5">Daily income and expenses across your accounts.</p>
+          <h1 className="text-xl font-semibold text-white">Transactions</h1>
+          <p className="text-sm text-slate-500 mt-0.5">Daily income and expenses across your accounts.</p>
         </div>
         <div className="flex gap-2">
           <button
             onClick={handleExportCsv}
             disabled={transactions.length === 0}
-            className="px-3 py-2 text-sm font-medium rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+            className="px-3 py-2 text-sm font-medium rounded-md border border-white/10 text-slate-300 hover:bg-white/5 disabled:opacity-50"
           >
             Export CSV
           </button>
           <button
             onClick={handleExportPdf}
             disabled={transactions.length === 0}
-            className="px-3 py-2 text-sm font-medium rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+            className="px-3 py-2 text-sm font-medium rounded-md border border-white/10 text-slate-300 hover:bg-white/5 disabled:opacity-50"
           >
             Export PDF
           </button>
@@ -95,18 +95,18 @@ export default function Transactions() {
               setModalOpen(true);
             }}
             disabled={accounts.length === 0}
-            className="px-3 py-2 text-sm font-medium rounded-md bg-primary-600 text-white hover:bg-primary-700 disabled:opacity-50"
+            className="px-3 py-2 text-sm font-medium rounded-md bg-emerald-600 text-white hover:bg-emerald-500 disabled:opacity-50"
           >
             Add Transaction
           </button>
         </div>
       </div>
 
-      <div className="bg-white rounded-lg border border-gray-200 p-5">
+      <div className="bg-slate-800/60 rounded-xl border border-white/5 p-5">
         {loading ? (
-          <p className="text-sm text-gray-500">Loading transactions...</p>
+          <p className="text-sm text-slate-500">Loading transactions...</p>
         ) : error ? (
-          <p className="text-sm text-red-600">{error}</p>
+          <p className="text-sm text-rose-400">{error}</p>
         ) : (
           <TransactionsTable
             transactions={transactions}

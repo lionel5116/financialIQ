@@ -1,58 +1,80 @@
+import { CreditCard, Landmark, PiggyBank, TrendingUp } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import AccountsOverviewList from '../components/AccountsOverviewList';
 import AllocationChart from '../components/AllocationChart';
+import IncomeExpenseChart from '../components/IncomeExpenseChart';
+import InvestmentsOverviewTable from '../components/InvestmentsOverviewTable';
 import StatCard from '../components/StatCard';
+import * as accountsApi from '../services/accounts';
 import { fetchDashboardSummary } from '../services/dashboard';
-import type { DashboardSummary } from '../types';
-import { ACCOUNT_TYPE_LABELS, formatCurrency } from '../utils/format';
+import * as investmentsApi from '../services/investments';
+import type { Account, DashboardSummary, Investment } from '../types';
+import { formatCurrency } from '../utils/format';
+
+const PANEL_CLASS = 'bg-slate-800/60 rounded-xl border border-white/5 p-5';
 
 export default function Dashboard() {
   const [summary, setSummary] = useState<DashboardSummary | null>(null);
+  const [accounts, setAccounts] = useState<Account[]>([]);
+  const [investments, setInvestments] = useState<Investment[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchDashboardSummary()
-      .then(setSummary)
+    Promise.all([fetchDashboardSummary(), accountsApi.fetchAccounts(), investmentsApi.fetchInvestments()])
+      .then(([s, a, i]) => {
+        setSummary(s);
+        setAccounts(a);
+        setInvestments(i);
+      })
       .catch(() => setError('Failed to load dashboard data. Is the backend running?'))
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <p className="text-sm text-gray-500">Loading dashboard...</p>;
-  if (error) return <p className="text-sm text-red-600">{error}</p>;
+  if (loading) return <p className="text-sm text-slate-500">Loading dashboard...</p>;
+  if (error) return <p className="text-sm text-rose-400">{error}</p>;
   if (!summary) return null;
+
+  const today = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-xl font-semibold text-gray-900">Dashboard</h1>
-        <p className="text-sm text-gray-500 mt-0.5">Your full financial picture at a glance.</p>
+      <div className="flex items-end justify-between">
+        <div>
+          <p className="text-xs font-medium text-emerald-400 uppercase tracking-wide">Dashboard</p>
+          <h1 className="text-2xl font-semibold text-white mt-1">Welcome back</h1>
+        </div>
+        <p className="text-sm text-slate-500">{today}</p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <StatCard label="Net Worth" value={formatCurrency(summary.netWorth)} />
-        <StatCard label="Investments" value={formatCurrency(summary.investmentsTotal)} />
-        <StatCard label="Spend This Month" value={formatCurrency(summary.monthToDateSpend)} />
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <StatCard label="Net Worth" value={formatCurrency(summary.netWorth)} icon={Landmark} accent="emerald" />
+        <StatCard label="Total Assets" value={formatCurrency(summary.totalAssets)} icon={TrendingUp} accent="sky" />
+        <StatCard label="Total Cash" value={formatCurrency(summary.totalCash)} icon={PiggyBank} accent="violet" />
+        <StatCard label="Expenses This Month" value={formatCurrency(summary.monthToDateSpend)} icon={CreditCard} accent="amber" />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <div className="bg-white rounded-lg border border-gray-200 p-5">
-          <h2 className="text-sm font-semibold text-gray-900 mb-4">Investment Allocation</h2>
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
+        <div className={`${PANEL_CLASS} lg:col-span-2`}>
+          <h2 className="text-sm font-semibold text-white mb-4">Asset Allocation Breakdown</h2>
           <AllocationChart allocation={summary.allocationByAssetClass} />
         </div>
 
-        <div className="bg-white rounded-lg border border-gray-200 p-5">
-          <h2 className="text-sm font-semibold text-gray-900 mb-4">Balances by Account Type</h2>
-          <ul className="divide-y divide-gray-100">
-            {Object.entries(summary.accountsByType).map(([type, balance]) => (
-              <li key={type} className="flex items-center justify-between py-2.5 text-sm">
-                <span className="text-gray-600">{ACCOUNT_TYPE_LABELS[type] || type}</span>
-                <span className="font-medium tabular-nums text-gray-900">{formatCurrency(balance)}</span>
-              </li>
-            ))}
-            {Object.keys(summary.accountsByType).length === 0 && (
-              <li className="text-sm text-gray-500 py-2.5">No accounts yet.</li>
-            )}
-          </ul>
+        <div className={`${PANEL_CLASS} lg:col-span-3`}>
+          <h2 className="text-sm font-semibold text-white mb-1">Accounts Overview</h2>
+          <AccountsOverviewList accounts={accounts} />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
+        <div className={`${PANEL_CLASS} lg:col-span-2`}>
+          <h2 className="text-sm font-semibold text-white mb-4">Investment Portfolio Summary</h2>
+          <InvestmentsOverviewTable investments={investments} />
+        </div>
+
+        <div className={`${PANEL_CLASS} lg:col-span-3`}>
+          <h2 className="text-sm font-semibold text-white mb-4">Expense &amp; Income Trend</h2>
+          <IncomeExpenseChart data={summary.incomeExpenseTrend} />
         </div>
       </div>
     </div>

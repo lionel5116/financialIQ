@@ -16,8 +16,8 @@ const CATEGORIES = [
 ];
 
 const FIELD_CLASS =
-  'w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500';
-const LABEL_CLASS = 'block text-sm font-medium text-gray-700 mb-1';
+  'w-full rounded-md border border-white/10 bg-slate-900 text-white px-3 py-2 text-sm placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500';
+const LABEL_CLASS = 'block text-sm font-medium text-slate-300 mb-1';
 
 interface TransactionFormModalProps {
   accounts: Account[];
@@ -111,7 +111,7 @@ export default function TransactionFormModal({ accounts, initial, onClose, onSub
         </div>
         <div>
           <label htmlFor="tx-amount" className={LABEL_CLASS}>
-            Amount <span className="text-gray-400">(negative for expenses)</span>
+            Amount <span className="text-slate-500">(negative for expenses)</span>
           </label>
           <input
             id="tx-amount"
@@ -127,14 +127,14 @@ export default function TransactionFormModal({ accounts, initial, onClose, onSub
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 text-sm font-medium rounded-md text-gray-600 hover:bg-gray-100"
+            className="px-4 py-2 text-sm font-medium rounded-md text-slate-400 hover:bg-white/5"
           >
             Cancel
           </button>
           <button
             type="submit"
             disabled={submitting || accounts.length === 0}
-            className="px-4 py-2 text-sm font-medium rounded-md bg-primary-600 text-white hover:bg-primary-700 disabled:opacity-50"
+            className="px-4 py-2 text-sm font-medium rounded-md bg-emerald-600 text-white hover:bg-emerald-500 disabled:opacity-50"
           >
             {initial ? 'Save' : 'Add Transaction'}
           </button>

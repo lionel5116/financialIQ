@@ -27,6 +27,7 @@ Both `frontend` and `backend` must live in the same root directory (Monorepo set
 ```text
 financialIQ/
 ├── INSTRUCTIONS.md
+├── package.json              # root: concurrently-based scripts to run both apps together
 ├── backend/
 │   ├── src/
 │   │   ├── config/          # DB connections & environment config
@@ -40,13 +41,15 @@ financialIQ/
 │   └── package.json
 ├── frontend/
 │   ├── src/
-│   │   ├── components/      # UI components (Tables, Charts, Modals, Navbar)
+│   │   ├── components/      # UI components (Tables, Charts, Modals, Sidebar, Logo)
 │   │   ├── pages/           # Dashboard, Accounts, Investments, Transactions
 │   │   ├── services/        # API service layers
 │   │   ├── types/           # TypeScript interfaces and types
 │   │   ├── utils/           # CSV and PDF export helpers
 │   │   ├── App.tsx
 │   │   └── main.tsx
+│   ├── public/
+│   │   └── favicon.svg      # financialIQ mark, matches Logo.tsx
 │   ├── package.json
 │   ├── tailwind.config.js
 │   └── tsconfig.json
@@ -76,6 +79,15 @@ npm run seed
 
 This drops and recreates `accounts`, `transactions`, and `investments`, then reloads the seed rows from `db/seed.sql`.
 
+To wipe all data back to empty **without** reloading the seed rows (e.g. to start clean before entering real data):
+
+```bash
+cd backend
+npm run clear
+```
+
+This runs `backend/db/clear.sql` — `TRUNCATE TABLE accounts, transactions, investments RESTART IDENTITY CASCADE`, which empties all three tables and resets their `id` sequences back to 1, without touching the schema. Unlike `npm run seed`, it leaves the database empty rather than repopulating it with demo data. This is destructive and not reversible except by re-running `npm run seed`.
+
 ---
 
 ## 3. Version Control
@@ -84,3 +96,29 @@ This drops and recreates `accounts`, `transactions`, and `investments`, then rel
 - **Default branch:** `main`
 - `.env` files (root, `backend/`, `frontend/`) are gitignored and were never committed — the repo carries only `.env.example` templates. Clone + copy the examples + fill in local credentials to get running.
 - Root `.gitignore` covers root-level `node_modules/`, `.env`, `.DS_Store`, and logs; `backend/.gitignore` and `frontend/.gitignore` cover their own `node_modules/`, build output (`dist/`), and env files.
+
+---
+
+## 4. Root Tooling
+
+The root `package.json` doesn't run either app itself — it orchestrates both via `concurrently` and `kill-port` (devDependencies):
+
+| Script | What it does |
+|---|---|
+| `npm run dev` | Runs `dev:backend` and `dev:frontend` together via `concurrently`, labeled/color-coded (`[backend]` blue, `[frontend]` magenta) |
+| `npm run dev:backend` / `npm run dev:frontend` | Proxy to each app's own `npm run dev` via `--prefix` |
+| `npm run install:all` | Installs dependencies in both `backend/` and `frontend/` |
+| `npm run seed` | Proxies to `backend`'s seed script |
+| `npm run clear` | Proxies to `backend`'s clear script — wipes all data, keeps the schema |
+| `npm run build` | Proxies to `frontend`'s production build |
+| `npm run stop` | Frees ports 4000 (backend) and 5173 (frontend) via `kill-port`, then reaps the lingering `node --watch` and `concurrently` supervisor processes so nothing idles in the background |
+
+---
+
+## 5. Design System & Branding
+
+- **Theme:** Fixed dark theme app-wide (not a light/dark toggle). Page background `slate-900`; panel/card surfaces `slate-800/60` with `border-white/5`; primary text `white`; secondary text `slate-400`/`slate-500`; accent color `emerald-500`/`emerald-400` (active nav state, primary buttons, positive values). Negative values use `rose-400`.
+- **Logo:** `frontend/src/components/Logo.tsx` renders the financialIQ mark (gradient bar-chart icon in a rounded dark square + "financial**IQ**" wordmark, IQ in emerald) and is used in the `Sidebar`. `frontend/public/favicon.svg` carries the same mark (icon only) for the browser tab. The component always renders in dark mode — no `dark:` Tailwind variants, since the app has no light theme to fall back to.
+- **Navigation:** A fixed-width left `Sidebar` (`frontend/src/components/Sidebar.tsx`), not a top navbar. Dark `slate-950` surface, logo at the top, nav items with `lucide-react` icons (`LayoutDashboard`, `Wallet`, `TrendingUp`, `Receipt`) + label, active route highlighted with an emerald background/text tint.
+- **Dashboard layout:** greeting header (page label + heading + date) → 4 stat cards (Net Worth, Total Assets, Total Cash, Expenses This Month) → a two-panel row (Asset Allocation Breakdown donut chart + Accounts Overview list) → a second two-panel row (Investment Portfolio Summary table + Expense & Income Trend bar chart). The backend `/api/dashboard/summary` endpoint supplies `totalAssets`, `totalCash`, and a per-day `incomeExpenseTrend` array to back these widgets, in addition to the pre-existing `netWorth`, `investmentsTotal`, `allocationByAssetClass`, and `monthToDateSpend`.
+- **Chart colors:** never eyeballed. Categorical series colors are assigned in a fixed hue order and validated against the actual dark card-surface color they render on (CVD-safe separation, contrast, lightness band) before shipping — see `AllocationChart.tsx` and `IncomeExpenseChart.tsx` for the validated hex values in use.

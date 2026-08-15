@@ -72,13 +72,27 @@ Open http://localhost:5173.
 | PUT/DELETE | `/api/transactions/:id` | Update / delete a transaction |
 | GET/POST | `/api/investments` | List (optional `?accountId=`) / create investment holdings |
 | PUT/DELETE | `/api/investments/:id` | Update / delete a holding |
-| GET | `/api/dashboard/summary` | Net worth, balances by type, allocation by asset class, month-to-date spend |
+| GET | `/api/dashboard/summary` | Net worth, total assets, total cash, balances by type, allocation by asset class, month-to-date spend, income/expense trend |
 
 ## Scripts
+
+From the project root (runs both apps together via `concurrently`):
+
+| Command | Description |
+|---|---|
+| `npm run dev` | Start backend + frontend together, labeled/color-coded output |
+| `npm run stop` | Free ports 4000 + 5173 and stop both dev servers |
+| `npm run install:all` | `npm install` in both `backend/` and `frontend/` |
+| `npm run seed` | (Re)apply schema + seed demo data |
+| `npm run clear` | Wipe all data back to empty (keeps schema, does **not** reseed) |
+| `npm run build` | Production build of the frontend |
+
+Per-app:
 
 | Location | Command | Description |
 |---|---|---|
 | `backend/` | `npm run dev` | Start the API with auto-reload |
-| `backend/` | `npm run seed` | (Re)apply schema + seed data |
+| `backend/` | `npm run seed` | Drop/recreate tables and load seed data |
+| `backend/` | `npm run clear` | Truncate all tables (reset to empty, id sequences reset to 1) |
 | `frontend/` | `npm run dev` | Start the Vite dev server |
 | `frontend/` | `npm run build` | Type-check and build for production |

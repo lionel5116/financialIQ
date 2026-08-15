@@ -89,21 +89,21 @@ export default function Investments() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-semibold text-gray-900">Investments</h1>
-          <p className="text-sm text-gray-500 mt-0.5">Holdings across your IRA, 401(k) and brokerage accounts.</p>
+          <h1 className="text-xl font-semibold text-white">Investments</h1>
+          <p className="text-sm text-slate-500 mt-0.5">Holdings across your IRA, 401(k) and brokerage accounts.</p>
         </div>
         <div className="flex gap-2">
           <button
             onClick={handleExportCsv}
             disabled={investments.length === 0}
-            className="px-3 py-2 text-sm font-medium rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+            className="px-3 py-2 text-sm font-medium rounded-md border border-white/10 text-slate-300 hover:bg-white/5 disabled:opacity-50"
           >
             Export CSV
           </button>
           <button
             onClick={handleExportPdf}
             disabled={investments.length === 0}
-            className="px-3 py-2 text-sm font-medium rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+            className="px-3 py-2 text-sm font-medium rounded-md border border-white/10 text-slate-300 hover:bg-white/5 disabled:opacity-50"
           >
             Export PDF
           </button>
@@ -113,18 +113,18 @@ export default function Investments() {
               setModalOpen(true);
             }}
             disabled={investableAccounts.length === 0}
-            className="px-3 py-2 text-sm font-medium rounded-md bg-primary-600 text-white hover:bg-primary-700 disabled:opacity-50"
+            className="px-3 py-2 text-sm font-medium rounded-md bg-emerald-600 text-white hover:bg-emerald-500 disabled:opacity-50"
           >
             Add Investment
           </button>
         </div>
       </div>
 
-      <div className="bg-white rounded-lg border border-gray-200 p-5">
+      <div className="bg-slate-800/60 rounded-xl border border-white/5 p-5">
         {loading ? (
-          <p className="text-sm text-gray-500">Loading investments...</p>
+          <p className="text-sm text-slate-500">Loading investments...</p>
         ) : error ? (
-          <p className="text-sm text-red-600">{error}</p>
+          <p className="text-sm text-rose-400">{error}</p>
         ) : (
           <InvestmentsTable
             investments={investments}
