@@ -4,6 +4,7 @@
 
 DROP TABLE IF EXISTS investments;
 DROP TABLE IF EXISTS transactions;
+DROP TABLE IF EXISTS recurring_expenses;
 DROP TABLE IF EXISTS accounts;
 
 -- Bank accounts, CDs, IRAs, 401k/brokerage accounts, home equity
@@ -19,6 +20,19 @@ CREATE TABLE accounts (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
+-- Recurring monthly bills (auto, insurance, utilities, subscriptions, etc.)
+CREATE TABLE recurring_expenses (
+  id SERIAL PRIMARY KEY,
+  account_id INTEGER NOT NULL REFERENCES accounts(id) ON DELETE CASCADE,
+  name VARCHAR(255) NOT NULL,
+  category VARCHAR(50) NOT NULL DEFAULT 'other',
+  amount NUMERIC(12, 2) NOT NULL CHECK (amount > 0),
+  day_of_month INTEGER NOT NULL CHECK (day_of_month BETWEEN 1 AND 31),
+  active BOOLEAN NOT NULL DEFAULT true,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
 -- Daily expenses / income tied to an account
 CREATE TABLE transactions (
   id SERIAL PRIMARY KEY,
@@ -27,6 +41,7 @@ CREATE TABLE transactions (
   description VARCHAR(255) NOT NULL,
   category VARCHAR(50) NOT NULL DEFAULT 'other',
   amount NUMERIC(12, 2) NOT NULL,
+  recurring_expense_id INTEGER REFERENCES recurring_expenses(id) ON DELETE SET NULL,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
@@ -44,7 +59,9 @@ CREATE TABLE investments (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
+CREATE INDEX idx_recurring_expenses_account_id ON recurring_expenses(account_id);
 CREATE INDEX idx_transactions_account_id ON transactions(account_id);
+CREATE INDEX idx_transactions_recurring_expense_id ON transactions(recurring_expense_id);
 CREATE INDEX idx_investments_account_id ON investments(account_id);
 
 -- Seed data (snapshot of real accounts)

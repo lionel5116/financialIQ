@@ -32,3 +32,17 @@ export const ASSET_CLASS_LABELS: Record<string, string> = {
   mutual_fund: 'Mutual Fund',
   cash: 'Cash',
 };
+
+export const TRANSACTION_CATEGORIES = [
+  'income',
+  'housing',
+  'groceries',
+  'utilities',
+  'transportation',
+  'insurance',
+  'dining',
+  'subscriptions',
+  'interest',
+  'healthcare',
+  'other',
+];

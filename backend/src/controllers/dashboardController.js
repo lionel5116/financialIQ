@@ -23,6 +23,9 @@ async function getSummary(req, res, next) {
        ORDER BY date ASC
        LIMIT 30`
     );
+    const recurringResult = await pool.query(
+      `SELECT COALESCE(SUM(amount), 0) AS total FROM recurring_expenses WHERE active = true`
+    );
 
     const accountsByType = {};
     let netWorth = 0;
@@ -59,6 +62,7 @@ async function getSummary(req, res, next) {
       allocationByAssetClass,
       monthToDateSpend: Math.abs(Number(monthlySpendResult.rows[0].total)),
       incomeExpenseTrend,
+      recurringMonthlyTotal: Number(recurringResult.rows[0].total),
     });
   } catch (err) {
     next(err);

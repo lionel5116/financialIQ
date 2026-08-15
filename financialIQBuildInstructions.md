@@ -42,7 +42,7 @@ financialIQ/
 ├── frontend/
 │   ├── src/
 │   │   ├── components/      # UI components (Tables, Charts, Modals, Sidebar, Logo)
-│   │   ├── pages/           # Dashboard, Accounts, Investments, Transactions
+│   │   ├── pages/           # Dashboard, Accounts, Investments, Transactions, RecurringExpenses
 │   │   ├── services/        # API service layers
 │   │   ├── types/           # TypeScript interfaces and types
 │   │   ├── utils/           # CSV and PDF export helpers
@@ -71,8 +71,9 @@ financialIQ/
 ### Schema & Seed Data
 - Define the schema (tables, constraints, indexes) as DDL in `backend/db/seed.sql`, covering at minimum:
   - `accounts` — bank accounts, CDs, IRAs, 401(k), brokerage accounts, and home equity. `accounts.type` must allow: `checking`, `savings`, `cash`, `cd`, `ira`, `401k`, `brokerage`, `home_equity`. Illiquid types like `home_equity` must count toward net worth / total assets (every account balance does) but must be excluded from any "total cash" aggregation.
-  - `transactions` — daily income/expenses tied to an account
+  - `transactions` — daily income/expenses tied to an account. Include a nullable `recurring_expense_id` FK (`ON DELETE SET NULL`) so a transaction generated from a recurring expense can be traced back to it, without deleting transaction history if the recurring expense is later removed.
   - `investments` — investment holdings tied to an account (any account type)
+  - `recurring_expenses` — monthly bills: `account_id`, `name`, `category`, `amount` (positive), `day_of_month` (1–31), `active`. Not a scheduler — no cron/background job. Instead, expose an endpoint to generate ("log") the current month's transaction for one recurring expense (reject if one's already been logged this month) and a bulk endpoint to log everything due. Computing "is this logged for the current month" is a query-time `EXISTS` check against `transactions.recurring_expense_id`, not a stored flag.
 - The same `seed.sql` file must also insert **test/seed records** for each table so the app has realistic data to develop and demo against immediately after setup (sample accounts across every account type, a handful of transactions, and a handful of investment holdings).
 - Provide an `npm run seed` script in `backend/package.json` that runs `seed.sql` against the configured database (drop/recreate tables, then insert the seed rows), so the database can be reset to a known state on demand.
 
@@ -113,5 +114,5 @@ financialIQ/
 - **Theme:** The application uses a single, fixed dark theme — no light/dark toggle. Page background and panel surfaces must be dark (e.g. slate-900 page, slate-800 panels); primary text near-white, secondary text muted gray; one accent color (e.g. emerald) for active nav state, primary actions, and positive values; a distinct color for negative values.
 - **Logo:** The app must use the provided `financialIQ` mark (gradient bar-chart icon in a rounded dark square + wordmark, with "IQ" in the accent color) as a reusable component, rendered in the sidebar, and as the browser favicon (icon only). Since the app has no light theme, the logo component must not rely on `dark:` Tailwind variants — render dark-mode styling unconditionally.
 - **Navigation:** Use a fixed-width left sidebar (not a top navbar): dark surface, logo at the top, nav items with icons + labels, and a visually distinct active-route state.
-- **Dashboard layout:** greeting header → a row of stat cards summarizing net worth, total assets, total cash, and current-month expenses → an asset allocation breakdown chart paired with an accounts overview list → an investment portfolio summary paired with an income/expense trend chart. The dashboard summary API must supply whatever aggregate fields these widgets need (e.g. total assets, total cash, a time-series of income vs. expenses) in addition to the core net worth / allocation / spend figures.
+- **Dashboard layout:** greeting header → a row of stat cards summarizing net worth, total assets, total cash, current-month expenses, and total recurring monthly commitment → an asset allocation breakdown (by asset class and by account type) paired with an accounts overview list → an investment portfolio summary paired with an income/expense trend chart. The dashboard summary API must supply whatever aggregate fields these widgets need (e.g. total assets, total cash, a time-series of income vs. expenses, a recurring-expense monthly total) in addition to the core net worth / allocation / spend figures. A stat card's accent color must come from a small fixed enum, not be improvised per card — extend the enum when a new card needs a color that isn't already in use elsewhere on the same row.
 - **Chart colors:** Never eyeball chart colors. Assign categorical series colors in a fixed hue order and validate them (contrast, colorblind-safe separation, lightness) against the actual surface color each chart renders on before shipping.

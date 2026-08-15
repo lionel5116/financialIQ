@@ -46,6 +46,25 @@ export interface Investment {
 
 export type InvestmentInput = Omit<Investment, 'id' | 'created_at' | 'updated_at' | 'account_name' | 'current_value'>;
 
+export interface RecurringExpense {
+  id: number;
+  account_id: number;
+  account_name?: string;
+  name: string;
+  category: string;
+  amount: number | string;
+  day_of_month: number;
+  active: boolean;
+  logged_this_month?: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export type RecurringExpenseInput = Omit<
+  RecurringExpense,
+  'id' | 'created_at' | 'updated_at' | 'account_name' | 'logged_this_month'
+>;
+
 export interface IncomeExpensePoint {
   date: string;
   income: number;
@@ -61,4 +80,5 @@ export interface DashboardSummary {
   allocationByAssetClass: Record<string, number>;
   monthToDateSpend: number;
   incomeExpenseTrend: IncomeExpensePoint[];
+  recurringMonthlyTotal: number;
 }

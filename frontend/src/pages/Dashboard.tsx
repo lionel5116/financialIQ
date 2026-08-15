@@ -1,4 +1,4 @@
-import { CreditCard, Landmark, PiggyBank, TrendingUp } from 'lucide-react';
+import { CreditCard, Landmark, PiggyBank, Repeat, TrendingUp } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import AccountsOverviewList from '../components/AccountsOverviewList';
 import AccountTypeChart from '../components/AccountTypeChart';
@@ -48,11 +48,12 @@ export default function Dashboard() {
         <p className="text-sm text-slate-500">{today}</p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
         <StatCard label="Net Worth" value={formatCurrency(summary.netWorth)} icon={Landmark} accent="emerald" />
         <StatCard label="Total Assets" value={formatCurrency(summary.totalAssets)} icon={TrendingUp} accent="sky" />
         <StatCard label="Total Cash" value={formatCurrency(summary.totalCash)} icon={PiggyBank} accent="violet" />
         <StatCard label="Expenses This Month" value={formatCurrency(summary.monthToDateSpend)} icon={CreditCard} accent="amber" />
+        <StatCard label="Recurring / Month" value={formatCurrency(summary.recurringMonthlyTotal)} icon={Repeat} accent="rose" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">

@@ -3,6 +3,7 @@ import Sidebar from './components/Sidebar';
 import Accounts from './pages/Accounts';
 import Dashboard from './pages/Dashboard';
 import Investments from './pages/Investments';
+import RecurringExpenses from './pages/RecurringExpenses';
 import Transactions from './pages/Transactions';
 
 function App() {
@@ -16,6 +17,7 @@ function App() {
             <Route path="/accounts" element={<Accounts />} />
             <Route path="/investments" element={<Investments />} />
             <Route path="/transactions" element={<Transactions />} />
+            <Route path="/recurring" element={<RecurringExpenses />} />
           </Routes>
         </main>
       </div>

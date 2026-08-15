@@ -42,7 +42,7 @@ financialIQ/
 ├── frontend/
 │   ├── src/
 │   │   ├── components/      # UI components (Tables, Charts, Modals, Sidebar, Logo)
-│   │   ├── pages/           # Dashboard, Accounts, Investments, Transactions
+│   │   ├── pages/           # Dashboard, Accounts, Investments, Transactions, RecurringExpenses
 │   │   ├── services/        # API service layers
 │   │   ├── types/           # TypeScript interfaces and types
 │   │   ├── utils/           # CSV and PDF export helpers
@@ -101,6 +101,17 @@ npm run snapshot
 
 `home_equity` is illiquid — a single balance field representing net home equity (home value minus any mortgage), entered as one number the same way a CD or IRA balance is. It counts toward Net Worth and Total Assets (every account balance does) but is deliberately excluded from Total Cash (`CASH_TYPES` in `backend/src/controllers/dashboardController.js`), unlike `checking`/`savings`/`cash`/`cd`.
 
+### Recurring Expenses
+A `recurring_expenses` table (`backend/db/migrations/003_add_recurring_expenses.sql`) tracks monthly bills: `account_id`, `name`, `category`, `amount` (always positive), `day_of_month` (1–31), `active`. `transactions.recurring_expense_id` (nullable FK) links a generated transaction back to the recurring expense that produced it.
+
+- `GET /api/recurring-expenses` computes `logged_this_month` per row via an `EXISTS` subquery against `transactions` for the current calendar month.
+- `POST /api/recurring-expenses/:id/log` creates that month's transaction (date = `day_of_month` clamped to the last day of the current month, amount negated), and returns **409** if one's already been logged this month — logging is not a no-op retry, it's a guarded one-time action per month.
+- `POST /api/recurring-expenses/log-all` does the same for every active, not-yet-logged recurring expense in one call.
+- Deleting a recurring expense does not delete transactions already generated from it (`ON DELETE SET NULL`, not `CASCADE`) — history is preserved.
+- The dashboard's `recurringMonthlyTotal` field sums `amount` across all `active` recurring expenses (regardless of whether logged yet).
+
+`TRANSACTION_CATEGORIES` (`frontend/src/utils/format.ts`) is shared between `TransactionFormModal` and `RecurringExpenseFormModal` — it now includes `insurance` alongside `income`, `housing`, `groceries`, `utilities`, `transportation`, `dining`, `subscriptions`, `interest`, `healthcare`, `other`.
+
 ---
 
 ## 3. Version Control
@@ -132,6 +143,7 @@ The root `package.json` doesn't run either app itself — it orchestrates both v
 
 - **Theme:** Fixed dark theme app-wide (not a light/dark toggle). Page background `slate-900`; panel/card surfaces `slate-800/60` with `border-white/5`; primary text `white`; secondary text `slate-400`/`slate-500`; accent color `emerald-500`/`emerald-400` (active nav state, primary buttons, positive values). Negative values use `rose-400`.
 - **Logo:** `frontend/src/components/Logo.tsx` renders the financialIQ mark (gradient bar-chart icon in a rounded dark square + "financial**IQ**" wordmark, IQ in emerald) and is used in the `Sidebar`. `frontend/public/favicon.svg` carries the same mark (icon only) for the browser tab. The component always renders in dark mode — no `dark:` Tailwind variants, since the app has no light theme to fall back to.
-- **Navigation:** A fixed-width left `Sidebar` (`frontend/src/components/Sidebar.tsx`), not a top navbar. Dark `slate-950` surface, logo at the top, nav items with `lucide-react` icons (`LayoutDashboard`, `Wallet`, `TrendingUp`, `Receipt`) + label, active route highlighted with an emerald background/text tint.
-- **Dashboard layout:** greeting header (page label + heading + date) → 4 stat cards (Net Worth, Total Assets, Total Cash, Expenses This Month) → a two-panel row (Asset Allocation Breakdown donut chart + Accounts Overview list) → a second two-panel row (Investment Portfolio Summary table + Expense & Income Trend bar chart). The backend `/api/dashboard/summary` endpoint supplies `totalAssets`, `totalCash`, and a per-day `incomeExpenseTrend` array to back these widgets, in addition to the pre-existing `netWorth`, `investmentsTotal`, `allocationByAssetClass`, and `monthToDateSpend`.
+- **Navigation:** A fixed-width left `Sidebar` (`frontend/src/components/Sidebar.tsx`), not a top navbar. Dark `slate-950` surface, logo at the top, nav items with `lucide-react` icons (`LayoutDashboard`, `Wallet`, `TrendingUp`, `Receipt`, `Repeat`) + label, active route highlighted with an emerald background/text tint.
+- **Dashboard layout:** greeting header (page label + heading + date) → 5 stat cards (Net Worth, Total Assets, Total Cash, Expenses This Month, Recurring / Month) → a two-panel row (Asset Allocation Breakdown: two donuts, by asset class and by account type + Accounts Overview list) → a second two-panel row (Investment Portfolio Summary table + Expense & Income Trend bar chart). The backend `/api/dashboard/summary` endpoint supplies `totalAssets`, `totalCash`, a per-day `incomeExpenseTrend` array, and `recurringMonthlyTotal` to back these widgets, in addition to the pre-existing `netWorth`, `investmentsTotal`, `allocationByAssetClass`, `accountsByType`, and `monthToDateSpend`.
+- `StatCard`'s `accent` prop is a fixed enum (`emerald`/`sky`/`violet`/`amber`/`rose`) — adding a 6th stat card means adding a 6th accent color there, not reusing one.
 - **Chart colors:** never eyeballed. Categorical series colors are assigned in a fixed hue order and validated against the actual dark card-surface color they render on (CVD-safe separation, contrast, lightness band) before shipping — see `AllocationChart.tsx` and `IncomeExpenseChart.tsx` for the validated hex values in use.

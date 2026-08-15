@@ -1,6 +1,6 @@
 # FinancialIQ
 
-A full-stack personal finance app for tracking bank accounts, CDs, IRAs, 401(k)/brokerage accounts, daily transactions, and investment portfolios — with CSV/PDF export and an asset allocation chart.
+A full-stack personal finance app for tracking bank accounts, CDs, IRAs, 401(k)/brokerage accounts, home equity, recurring monthly bills, daily transactions, and investment portfolios — with CSV/PDF export and asset allocation charts.
 
 See [INSTRUCTIONS.md](./INSTRUCTIONS.md) for the original architecture blueprint.
 
@@ -74,7 +74,11 @@ Open http://localhost:5173.
 | PUT/DELETE | `/api/transactions/:id` | Update / delete a transaction |
 | GET/POST | `/api/investments` | List (optional `?accountId=`) / create investment holdings |
 | PUT/DELETE | `/api/investments/:id` | Update / delete a holding |
-| GET | `/api/dashboard/summary` | Net worth, total assets, total cash, balances by type, allocation by asset class, month-to-date spend, income/expense trend |
+| GET/POST | `/api/recurring-expenses` | List (with `logged_this_month`) / create recurring monthly bills |
+| PUT/DELETE | `/api/recurring-expenses/:id` | Update / delete a recurring expense |
+| POST | `/api/recurring-expenses/:id/log` | Create this month's transaction for one recurring expense (409 if already logged) |
+| POST | `/api/recurring-expenses/log-all` | Log every active recurring expense not yet logged this month |
+| GET | `/api/dashboard/summary` | Net worth, total assets, total cash, balances by type, allocation by asset class, month-to-date spend, income/expense trend, recurring monthly total |
 
 ## Scripts
 

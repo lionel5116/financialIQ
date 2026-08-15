@@ -4,7 +4,7 @@ interface StatCardProps {
   label: string;
   value: string;
   icon: LucideIcon;
-  accent: 'emerald' | 'sky' | 'violet' | 'amber';
+  accent: 'emerald' | 'sky' | 'violet' | 'amber' | 'rose';
 }
 
 const ACCENT_CLASSES: Record<StatCardProps['accent'], string> = {
@@ -12,6 +12,7 @@ const ACCENT_CLASSES: Record<StatCardProps['accent'], string> = {
   sky: 'bg-sky-500/10 text-sky-400',
   violet: 'bg-violet-500/10 text-violet-400',
   amber: 'bg-amber-500/10 text-amber-400',
+  rose: 'bg-rose-500/10 text-rose-400',
 };
 
 export default function StatCard({ label, value, icon: Icon, accent }: StatCardProps) {

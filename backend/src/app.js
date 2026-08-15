@@ -6,6 +6,7 @@ const cors = require('cors');
 const accountsRouter = require('./routes/accounts');
 const transactionsRouter = require('./routes/transactions');
 const investmentsRouter = require('./routes/investments');
+const recurringExpensesRouter = require('./routes/recurringExpenses');
 const dashboardRouter = require('./routes/dashboard');
 const { notFound, errorHandler } = require('./middleware/errorHandler');
 
@@ -19,6 +20,7 @@ app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
 app.use('/api/accounts', accountsRouter);
 app.use('/api/transactions', transactionsRouter);
 app.use('/api/investments', investmentsRouter);
+app.use('/api/recurring-expenses', recurringExpensesRouter);
 app.use('/api/dashboard', dashboardRouter);
 
 app.use(notFound);

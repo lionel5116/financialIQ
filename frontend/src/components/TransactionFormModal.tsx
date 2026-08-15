@@ -1,19 +1,7 @@
 import { useState } from 'react';
 import type { Account, Transaction, TransactionInput } from '../types';
+import { TRANSACTION_CATEGORIES } from '../utils/format';
 import Modal from './Modal';
-
-const CATEGORIES = [
-  'income',
-  'housing',
-  'groceries',
-  'utilities',
-  'transportation',
-  'dining',
-  'subscriptions',
-  'interest',
-  'healthcare',
-  'other',
-];
 
 const FIELD_CLASS =
   'w-full rounded-md border border-white/10 bg-slate-900 text-white px-3 py-2 text-sm placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500';
@@ -102,7 +90,7 @@ export default function TransactionFormModal({ accounts, initial, onClose, onSub
             Category
           </label>
           <select id="tx-category" value={category} onChange={(e) => setCategory(e.target.value)} className={FIELD_CLASS}>
-            {CATEGORIES.map((c) => (
+            {TRANSACTION_CATEGORIES.map((c) => (
               <option key={c} value={c}>
                 {c}
               </option>

@@ -13,6 +13,7 @@ const SCHEMA = `-- FinancialIQ PostgreSQL schema & seed data
 
 DROP TABLE IF EXISTS investments;
 DROP TABLE IF EXISTS transactions;
+DROP TABLE IF EXISTS recurring_expenses;
 DROP TABLE IF EXISTS accounts;
 
 -- Bank accounts, CDs, IRAs, 401k/brokerage accounts, home equity
@@ -28,6 +29,19 @@ CREATE TABLE accounts (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
+-- Recurring monthly bills (auto, insurance, utilities, subscriptions, etc.)
+CREATE TABLE recurring_expenses (
+  id SERIAL PRIMARY KEY,
+  account_id INTEGER NOT NULL REFERENCES accounts(id) ON DELETE CASCADE,
+  name VARCHAR(255) NOT NULL,
+  category VARCHAR(50) NOT NULL DEFAULT 'other',
+  amount NUMERIC(12, 2) NOT NULL CHECK (amount > 0),
+  day_of_month INTEGER NOT NULL CHECK (day_of_month BETWEEN 1 AND 31),
+  active BOOLEAN NOT NULL DEFAULT true,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
 -- Daily expenses / income tied to an account
 CREATE TABLE transactions (
   id SERIAL PRIMARY KEY,
@@ -36,6 +50,7 @@ CREATE TABLE transactions (
   description VARCHAR(255) NOT NULL,
   category VARCHAR(50) NOT NULL DEFAULT 'other',
   amount NUMERIC(12, 2) NOT NULL,
+  recurring_expense_id INTEGER REFERENCES recurring_expenses(id) ON DELETE SET NULL,
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
@@ -53,7 +68,9 @@ CREATE TABLE investments (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
+CREATE INDEX idx_recurring_expenses_account_id ON recurring_expenses(account_id);
 CREATE INDEX idx_transactions_account_id ON transactions(account_id);
+CREATE INDEX idx_transactions_recurring_expense_id ON transactions(recurring_expense_id);
 CREATE INDEX idx_investments_account_id ON investments(account_id);
 `;
 
@@ -64,6 +81,10 @@ function str(value) {
 
 function num(value) {
   return value === null || value === undefined ? 'NULL' : String(value);
+}
+
+function bool(value) {
+  return value ? 'true' : 'false';
 }
 
 function date(value) {
@@ -84,6 +105,7 @@ function buildInsert(table, columns, rows, rowToValues) {
 
 async function run() {
   const accounts = (await pool.query('SELECT * FROM accounts ORDER BY id')).rows;
+  const recurringExpenses = (await pool.query('SELECT * FROM recurring_expenses ORDER BY id')).rows;
   const transactions = (await pool.query('SELECT * FROM transactions ORDER BY id')).rows;
   const investments = (await pool.query('SELECT * FROM investments ORDER BY id')).rows;
 
@@ -103,14 +125,22 @@ async function run() {
   parts.push('\n');
 
   parts.push(
-    buildInsert('transactions', ['id', 'account_id', 'date', 'description', 'category', 'amount'], transactions, (t) => [
-      num(t.id),
-      num(t.account_id),
-      date(t.date),
-      str(t.description),
-      str(t.category),
-      num(t.amount),
-    ])
+    buildInsert(
+      'recurring_expenses',
+      ['id', 'account_id', 'name', 'category', 'amount', 'day_of_month', 'active'],
+      recurringExpenses,
+      (r) => [num(r.id), num(r.account_id), str(r.name), str(r.category), num(r.amount), num(r.day_of_month), bool(r.active)]
+    )
+  );
+  parts.push('\n');
+
+  parts.push(
+    buildInsert(
+      'transactions',
+      ['id', 'account_id', 'date', 'description', 'category', 'amount', 'recurring_expense_id'],
+      transactions,
+      (t) => [num(t.id), num(t.account_id), date(t.date), str(t.description), str(t.category), num(t.amount), num(t.recurring_expense_id)]
+    )
   );
   parts.push('\n');
 
@@ -126,7 +156,7 @@ async function run() {
   const outPath = path.join(__dirname, '../db/seed.sql');
   fs.writeFileSync(outPath, parts.join(''));
   console.log(
-    `Wrote db/seed.sql: ${accounts.length} accounts, ${transactions.length} transactions, ${investments.length} investments.`
+    `Wrote db/seed.sql: ${accounts.length} accounts, ${recurringExpenses.length} recurring expenses, ${transactions.length} transactions, ${investments.length} investments.`
   );
   await pool.end();
 }
