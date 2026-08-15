@@ -92,6 +92,17 @@ INSERT INTO accounts (id, name, type, institution, balance, interest_rate, matur
   (25, 'Home Equity', 'home_equity', '17615 Magnolia Cr', 375000.00, NULL, NULL);
 SELECT setval('accounts_id_seq', 25);
 
+INSERT INTO recurring_expenses (id, account_id, name, category, amount, day_of_month, active) VALUES
+  (4, 1, 'Macan - T - BALLER 2026 - PLAN', 'transportation', 1276.00, 1, true),
+  (5, 1, 'Travelers - Auto', 'insurance', 140.00, 1, true),
+  (6, 1, 'Travelers - Homeowners', 'insurance', 255.58, 1, true),
+  (7, 1, 'XFINITY', 'utilities', 55.29, 1, true),
+  (8, 1, 'Water', 'utilities', 50.73, 1, true),
+  (9, 1, 'Reliant - Keep Nights and weekends (8PM-8AM All weekend)', 'utilities', 60.00, 1, true),
+  (10, 1, 'Centerpoint', 'utilities', 26.00, 1, true),
+  (11, 1, 'Cellular', 'utilities', 78.00, 1, true);
+SELECT setval('recurring_expenses_id_seq', 11);
+
 -- transactions: no rows
 
 INSERT INTO investments (id, account_id, symbol, name, asset_class, shares, cost_basis, current_price) VALUES
