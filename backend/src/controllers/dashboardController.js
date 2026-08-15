@@ -1,6 +1,6 @@
 const pool = require('../config/db');
 
-const CASH_TYPES = ['checking', 'savings', 'cd'];
+const CASH_TYPES = ['checking', 'savings', 'cash', 'cd'];
 
 async function getSummary(req, res, next) {
   try {

@@ -88,6 +88,8 @@ npm run clear
 
 This runs `backend/db/clear.sql` — `TRUNCATE TABLE accounts, transactions, investments RESTART IDENTITY CASCADE`, which empties all three tables and resets their `id` sequences back to 1, without touching the schema. Unlike `npm run seed`, it leaves the database empty rather than repopulating it with demo data. This is destructive and not reversible except by re-running `npm run seed`.
 
+`accounts.type` allows: `checking`, `savings`, `cash`, `cd`, `ira`, `401k`, `brokerage`. Once this database holds real data, schema changes (like adding `cash`) must go through `backend/db/migrations/` — additive SQL run directly against the live database — rather than `npm run seed`, which would drop and discard everything. `backend/db/migrations/001_add_cash_account_type.sql` is the migration that added the `cash` type here.
+
 ---
 
 ## 3. Version Control

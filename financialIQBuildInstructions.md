@@ -70,14 +70,17 @@ financialIQ/
 
 ### Schema & Seed Data
 - Define the schema (tables, constraints, indexes) as DDL in `backend/db/seed.sql`, covering at minimum:
-  - `accounts` — bank accounts, CDs, IRAs, 401(k), and brokerage accounts
+  - `accounts` — bank accounts, CDs, IRAs, 401(k), and brokerage accounts. `accounts.type` must allow: `checking`, `savings`, `cash`, `cd`, `ira`, `401k`, `brokerage`.
   - `transactions` — daily income/expenses tied to an account
-  - `investments` — investment holdings tied to an IRA/401(k)/brokerage account
+  - `investments` — investment holdings tied to an account (any account type)
 - The same `seed.sql` file must also insert **test/seed records** for each table so the app has realistic data to develop and demo against immediately after setup (sample accounts across every account type, a handful of transactions, and a handful of investment holdings).
 - Provide an `npm run seed` script in `backend/package.json` that runs `seed.sql` against the configured database (drop/recreate tables, then insert the seed rows), so the database can be reset to a known state on demand.
 
 ### Clearing Data
 - Provide a separate `backend/db/clear.sql` (a `TRUNCATE ... RESTART IDENTITY CASCADE` over every table) and an `npm run clear` script in `backend/package.json` that empties all tables **without** reinserting seed data and without dropping the schema. This is distinct from `npm run seed`: `seed` resets to demo data, `clear` resets to genuinely empty. Since it's destructive, it must never run automatically (e.g. on server start) — only on explicit invocation.
+
+### Schema Migrations
+- `backend/db/seed.sql` drops and recreates tables — safe for a fresh database, but **never** run it against a database that already holds real user data, since it discards everything. When the schema changes after real data exists (e.g. adding a new `accounts.type` value), write a one-off, additive SQL file under `backend/db/migrations/` (e.g. `ALTER TABLE ... DROP/ADD CONSTRAINT`) and apply it directly against the existing database instead of reseeding. `seed.sql` should still be updated in the same change so fresh installs get the new schema for free.
 
 ---
 

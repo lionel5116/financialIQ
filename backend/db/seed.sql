@@ -8,7 +8,7 @@ DROP TABLE IF EXISTS accounts;
 CREATE TABLE accounts (
   id SERIAL PRIMARY KEY,
   name VARCHAR(120) NOT NULL,
-  type VARCHAR(20) NOT NULL CHECK (type IN ('checking', 'savings', 'cd', 'ira', '401k', 'brokerage')),
+  type VARCHAR(20) NOT NULL CHECK (type IN ('checking', 'savings', 'cash', 'cd', 'ira', '401k', 'brokerage')),
   institution VARCHAR(120),
   balance NUMERIC(14, 2) NOT NULL DEFAULT 0,
   interest_rate NUMERIC(5, 3),

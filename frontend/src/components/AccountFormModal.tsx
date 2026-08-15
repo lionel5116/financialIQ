@@ -3,7 +3,7 @@ import type { Account, AccountInput, AccountType } from '../types';
 import { ACCOUNT_TYPE_LABELS } from '../utils/format';
 import Modal from './Modal';
 
-const ACCOUNT_TYPES: AccountType[] = ['checking', 'savings', 'cd', 'ira', '401k', 'brokerage'];
+const ACCOUNT_TYPES: AccountType[] = ['checking', 'savings', 'cash', 'cd', 'ira', '401k', 'brokerage'];
 const FIELD_CLASS =
   'w-full rounded-md border border-white/10 bg-slate-900 text-white px-3 py-2 text-sm placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500';
 const LABEL_CLASS = 'block text-sm font-medium text-slate-300 mb-1';

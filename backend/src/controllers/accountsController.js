@@ -1,6 +1,6 @@
 const pool = require('../config/db');
 
-const ACCOUNT_TYPES = ['checking', 'savings', 'cd', 'ira', '401k', 'brokerage'];
+const ACCOUNT_TYPES = ['checking', 'savings', 'cash', 'cd', 'ira', '401k', 'brokerage'];
 
 async function listAccounts(req, res, next) {
   try {

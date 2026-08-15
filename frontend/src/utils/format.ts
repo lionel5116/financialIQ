@@ -17,6 +17,7 @@ export function toTitleCase(value: string): string {
 export const ACCOUNT_TYPE_LABELS: Record<string, string> = {
   checking: 'Checking',
   savings: 'Savings',
+  cash: 'Cash',
   cd: 'CD',
   ira: 'IRA',
   '401k': '401(k)',

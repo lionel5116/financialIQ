@@ -1,10 +1,11 @@
-import { Banknote, Landmark, PiggyBank, Wallet } from 'lucide-react';
+import { Banknote, Coins, Landmark, PiggyBank, Wallet } from 'lucide-react';
 import type { Account, AccountType } from '../types';
 import { formatCurrency } from '../utils/format';
 
 const TYPE_ICON: Record<AccountType, typeof Wallet> = {
   checking: Wallet,
   savings: PiggyBank,
+  cash: Coins,
   cd: Banknote,
   ira: Landmark,
   '401k': Landmark,
@@ -14,6 +15,7 @@ const TYPE_ICON: Record<AccountType, typeof Wallet> = {
 const TYPE_ACCENT: Record<AccountType, string> = {
   checking: 'bg-sky-500/10 text-sky-400',
   savings: 'bg-emerald-500/10 text-emerald-400',
+  cash: 'bg-lime-500/10 text-lime-400',
   cd: 'bg-amber-500/10 text-amber-400',
   ira: 'bg-violet-500/10 text-violet-400',
   '401k': 'bg-pink-500/10 text-pink-400',
