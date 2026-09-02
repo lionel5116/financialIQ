@@ -1,4 +1,4 @@
-import { LayoutDashboard, Receipt, Repeat, TrendingUp, Wallet } from 'lucide-react';
+import { LayoutDashboard, Receipt, Repeat, StickyNote, TrendingUp, Wallet } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 import Logo from './Logo';
 
@@ -8,6 +8,7 @@ const links = [
   { to: '/investments', label: 'Investments', icon: TrendingUp },
   { to: '/transactions', label: 'Transactions', icon: Receipt },
   { to: '/recurring', label: 'Recurring', icon: Repeat },
+  { to: '/notes', label: 'Notes', icon: StickyNote },
 ];
 
 export default function Sidebar() {

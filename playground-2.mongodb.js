@@ -32,6 +32,12 @@ db.notes.find( { Title: "XFINITY" } )
 use('AssetManagement2022');
 db.notes.find({ Title: { $regex: "ga", $options: "i" } });
 
+use('AssetManagement2022');
+db.notes.find( { Title: "Tmobile" } )
+
+use('AssetManagement2022');
+db.notes.find({ Title: { $regex: "TM", $options: "i" } });
+
 
 
 

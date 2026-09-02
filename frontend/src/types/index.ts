@@ -82,3 +82,10 @@ export interface DashboardSummary {
   incomeExpenseTrend: IncomeExpensePoint[];
   recurringMonthlyTotal: number;
 }
+
+export interface Note {
+  _id: string;
+  Title: string;
+  Category: string;
+  Note: string;
+}

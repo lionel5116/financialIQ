@@ -8,6 +8,7 @@ const transactionsRouter = require('./routes/transactions');
 const investmentsRouter = require('./routes/investments');
 const recurringExpensesRouter = require('./routes/recurringExpenses');
 const dashboardRouter = require('./routes/dashboard');
+const notesRouter = require('./routes/notes');
 const { notFound, errorHandler } = require('./middleware/errorHandler');
 
 const app = express();
@@ -26,6 +27,7 @@ app.use('/api/transactions', transactionsRouter);
 app.use('/api/investments', investmentsRouter);
 app.use('/api/recurring-expenses', recurringExpensesRouter);
 app.use('/api/dashboard', dashboardRouter);
+app.use('/api/notes', notesRouter);
 
 app.use(notFound);
 app.use(errorHandler);
