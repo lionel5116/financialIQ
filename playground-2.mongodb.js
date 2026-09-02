@@ -38,7 +38,20 @@ db.notes.find( { Title: "Tmobile" } )
 use('AssetManagement2022');
 db.notes.find({ Title: { $regex: "TM", $options: "i" } });
 
+//to add a new note
+use('AssetManagement2022');
+db.notes.insertOne({
+  Title: "Rick James",
+  Category: "Password",
+  Note: "Tina Marie"
+});
 
+use('AssetManagement2022');
+db.notes.find({ Title: { $regex: "Rick", $options: "i" } });
 
-
+//to delete
+use('AssetManagement2022');
+db.notes.deleteOne({
+  _id: ObjectId('6a9867034c95f9c3f2b315c1')
+});
 
