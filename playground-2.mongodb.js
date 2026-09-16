@@ -41,9 +41,9 @@ db.notes.find({ Title: { $regex: "TM", $options: "i" } });
 //to add a new note
 use('AssetManagement2022');
 db.notes.insertOne({
-  Title: "Rick James",
+  Title: "Mass Mutal - Transocean",
   Category: "Password",
-  Note: "Tina Marie"
+  Note: "Now handling Transoean Pension. PE/BFLU@@123 - Changed on 9/9/2026"
 });
 
 use('AssetManagement2022');
