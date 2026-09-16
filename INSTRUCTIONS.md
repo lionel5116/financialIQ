@@ -42,7 +42,7 @@ financialIQ/
 ├── frontend/
 │   ├── src/
 │   │   ├── components/      # UI components (Tables, Charts, Modals, Sidebar, Logo)
-│   │   ├── pages/           # Dashboard, Accounts, Investments, Transactions, RecurringExpenses
+│   │   ├── pages/           # Dashboard, Accounts, Investments, Transactions, RecurringExpenses, Notes
 │   │   ├── services/        # API service layers
 │   │   ├── types/           # TypeScript interfaces and types
 │   │   ├── utils/           # CSV and PDF export helpers
@@ -147,7 +147,7 @@ The root `package.json` doesn't run either app itself — it orchestrates both v
 
 - **Theme:** Fixed dark theme app-wide (not a light/dark toggle). Page background `slate-900`; panel/card surfaces `slate-800/60` with `border-white/5`; primary text `white`; secondary text `slate-400`/`slate-500`; accent color `emerald-500`/`emerald-400` (active nav state, primary buttons, positive values). Negative values use `rose-400`.
 - **Logo:** `frontend/src/components/Logo.tsx` renders the financialIQ mark (gradient bar-chart icon in a rounded dark square + "financial**IQ**" wordmark, IQ in emerald) and is used in the `Sidebar`. `frontend/public/favicon.svg` carries the same mark (icon only) for the browser tab. The component always renders in dark mode — no `dark:` Tailwind variants, since the app has no light theme to fall back to.
-- **Navigation:** A fixed-width left `Sidebar` (`frontend/src/components/Sidebar.tsx`), not a top navbar. Dark `slate-950` surface, logo at the top, nav items with `lucide-react` icons (`LayoutDashboard`, `Wallet`, `TrendingUp`, `Receipt`, `Repeat`) + label, active route highlighted with an emerald background/text tint.
+- **Navigation:** A fixed-width left `Sidebar` (`frontend/src/components/Sidebar.tsx`), not a top navbar. Dark `slate-950` surface, logo at the top, nav items with `lucide-react` icons (`LayoutDashboard`, `Wallet`, `TrendingUp`, `Receipt`, `Repeat`, `StickyNote`) + label, active route highlighted with an emerald background/text tint.
 - **Dashboard layout:** greeting header (page label + heading + date) → 5 stat cards (Net Worth, Total Assets, Total Cash, Expenses This Month, Recurring / Month) → a two-panel row (Asset Allocation Breakdown: two donuts, by asset class and by account type + Accounts Overview list) → a second two-panel row (Investment Portfolio Summary table + Expense & Income Trend bar chart). The backend `/api/dashboard/summary` endpoint supplies `totalAssets`, `totalCash`, a per-day `incomeExpenseTrend` array, and `recurringMonthlyTotal` to back these widgets, in addition to the pre-existing `netWorth`, `investmentsTotal`, `allocationByAssetClass`, `accountsByType`, and `monthToDateSpend`.
 - `StatCard`'s `accent` prop is a fixed enum (`emerald`/`sky`/`violet`/`amber`/`rose`) — adding a 6th stat card means adding a 6th accent color there, not reusing one.
 - **Chart colors:** never eyeballed. Categorical series colors are assigned in a fixed hue order and validated against the actual dark card-surface color they render on (CVD-safe separation, contrast, lightness band) before shipping — see `AllocationChart.tsx` and `IncomeExpenseChart.tsx` for the validated hex values in use.
@@ -155,4 +155,8 @@ The root `package.json` doesn't run either app itself — it orchestrates both v
 
 ## MongoDB (Notes search)
 
-The backend's Notes search feature (`backend/src/config/mongo.js`, `GET /api/notes?title=`) queries the `AssetManagement2022` database's `notes` collection (`Title`, `Category`, `Note` fields) on MongoDB Atlas, doing a case-insensitive `$regex` match on `Title`. The real connection string lives only in `backend/.env` as `MONGODB_URI` (gitignored, not committed) — see `backend/.env.example` for the shape (`mongodb+srv://<user>:<password>@<cluster-host>/`). This repo is public, so the credential itself is never written here.
+A `/notes` screen (`frontend/src/pages/Notes.tsx`, linked from the `Sidebar`) searches saved notes by title as-you-type (debounced, case-insensitive, like-search — not exact match) and shows a single detail view for one result or a click-to-expand card grid for several, via `frontend/src/services/notes.ts`.
+
+The backend (`backend/src/config/mongo.js`, `backend/src/controllers/notesController.js`, `GET /api/notes?title=`) queries the `AssetManagement2022` database's `notes` collection (`Title`, `Category`, `Note` fields) on MongoDB Atlas, doing a case-insensitive `$regex` match on `Title` (regex-escaped; empty/missing `title` returns all notes). The real connection string lives only in `backend/.env` as `MONGODB_URI` (gitignored, not committed) — see `backend/.env.example` for the shape (`mongodb+srv://<user>:<password>@<cluster-host>/`). This repo is public, so the credential itself is never written here.
+
+`playground-2.mongodb.js` (root) is a scratch file for the MongoDB VS Code extension — ad hoc queries against the same Atlas cluster, not part of the app. `.vscode/settings.json` holds that extension's preset connection (a harmless `mongodb://localhost:27017` placeholder, not the real Atlas credential).
