@@ -55,3 +55,16 @@ db.notes.deleteOne({
   _id: ObjectId('6a9867034c95f9c3f2b315c1')
 });
 
+use('AssetManagement2022');
+db.notes.find({ Title: { $regex: "amz", $options: "i" } });
+
+use('AssetManagement2022');
+db.notes.updateOne(
+  { _id: ObjectId('62f5b36bb132245d44e5a07a') },
+  { $set: { Title: 'AMZ - Primary De Comprass', Note: 'PE/mmc8585**' } }
+);
+
+use('AssetManagement2022');
+db.getCollectionNames();
+
+db.notes.find({ Title: 'AMZ - Primary De Comprass' });
